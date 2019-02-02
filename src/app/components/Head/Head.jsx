@@ -6,7 +6,6 @@ import Button from '@material-ui/core/Button';
 import SearchIcon from '@material-ui/icons/Search';
 
 export default ({classes}) => {
-  console.log('hello');
   return (
     <div>
       <Toolbar className={classes.toolbarMain}>

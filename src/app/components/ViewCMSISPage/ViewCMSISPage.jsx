@@ -5,7 +5,7 @@ import xml2js from 'xml2js';
 import PropTypes from 'prop-types';
 import {withStyles} from '@material-ui/core/styles';
 import styles from '../../styles';
-import Page from '../Page/Page';
+import Input from '@material-ui/core/Input';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -15,6 +15,14 @@ import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Divider from '@material-ui/core/Divider';
+import PeripheralList from '../PeripheralList/PeripheralList';
+import SplitPane from 'react-split-pane';
+import Page from '../Page/Page';
+import s from './ViewCMSISPage.scss';
+import Register from '../Register/Register';
+import {GDB} from 'gdb-js';
+import {load} from '../../actions/gdb';
+import GDBToolbar from '../../containers/GDBToolbarContainer';
 
 function Info({data, classes}) {
   const rows = [];
@@ -92,31 +100,13 @@ function CpuInfo({data, classes}) {
   );
 }
 
-class Peripheral extends React.Component {
-  render() {
-    return (
-      <div>
-
-      </div>
-    );
-  }
-}
-
-class PeripheralList extends React.Component {
-  render() {
-    return (
-      <div>
-
-      </div>
-    );
-  }
-}
-
 class ViewCMSISPage extends React.Component {
   
   constructor(props) {
     super(props);
-    this.state = {}
+    this.state = {
+      selectedRegisters: [],
+    }
   }
 
   componentDidMount() {
@@ -135,6 +125,10 @@ class ViewCMSISPage extends React.Component {
         });
       }
     });
+  }
+
+  load() {
+    this.props.dispatch(load({filepath}));
   }
 
   getPeripheralList(peripherals) {
@@ -182,7 +176,7 @@ class ViewCMSISPage extends React.Component {
 
       if (peripheral.interrupt) {
         result.interrupt = peripheral.interrupt.map((i) => ({
-          description: i.description[0],
+          description: i.description ? i.description[0] : '',
           name: i.name[0],
           value: i.value[0],
         }));
@@ -214,10 +208,14 @@ class ViewCMSISPage extends React.Component {
                   f_top[k] = item[0];
                 }
               });
+              if (!f_top.access) {
+                f_top.access = reg_result.access;
+              }
               return f_top;
             });
           }
 
+          reg_result.peripheral = result.name;
           return reg_result;
         });
       }
@@ -237,6 +235,18 @@ class ViewCMSISPage extends React.Component {
     });
   }
 
+  onSelectItem({peripheral, register}) {
+    const id = `${peripheral.name}_${register.name}`;
+    const acquired = this.state.selectedRegisters.filter((reg) => {      
+      return id === `${peripheral.name}_${reg.name}`;
+    }).length > 0;
+    if (!acquired) {
+      this.setState({
+        selectedRegisters: this.state.selectedRegisters.concat([register]),
+      });
+    }
+  }
+
   render() {
     const {classes} = this.props;
     const {company} = this.props.match.params;
@@ -245,18 +255,34 @@ class ViewCMSISPage extends React.Component {
       return null;
     }
 
-    console.log(this.state.data);
-    console.log(this.getPeripheralList(this.state.data.device.peripherals[0].peripheral))
+    const peripherals = this.getPeripheralList(this.state.data.device.peripherals[0].peripheral);
 
     return (
       <Page>
-        <Paper>
-          <Info data={this.state.data} classes={classes} />
-        </Paper>
-        <Divider />
-        <Paper>
-          <CpuInfo data={this.state.data.device.cpu[0]} classes={classes} />
-        </Paper>
+        <SplitPane className={s.container} minSize={375} style={{position: 'relative'}} split="vertical">
+            <div className={s.leftpane}>
+              <Paper>
+                <PeripheralList onSelectItem={this.onSelectItem.bind(this)} peripherals={peripherals} />
+              </Paper>
+              <Paper>
+                <Info data={this.state.data} classes={classes} />
+              </Paper>
+              <Divider />
+              <Paper>
+                {this.state.data.device.cpu && <CpuInfo data={this.state.data.device.cpu[0]} classes={classes} />}
+              </Paper>
+            </div>
+            <div className={s.rightpane}>
+              <Paper>
+                <GDBToolbar />
+                {this.state.selectedRegisters.map((data, i) => {
+                  return (
+                    <Register key={`register-${i}`} data={data} />
+                  );
+                })}
+              </Paper>
+            </div>
+        </SplitPane>
       </Page>
     );
   }

@@ -20,7 +20,6 @@ export default class extends React.Component {
       if (err) {
         throw err;
       }
-      console.log('THE LINKS', res);
       const links = res.filter((p) => path.extname(p) === '.svd');
       this.setState({loading: false, links});
     });

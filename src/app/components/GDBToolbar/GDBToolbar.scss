@@ -1,0 +1,27 @@
+.gdb_toolbar {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.hidden {
+  display: none;
+}
+
+.fileinput_container {
+  padding: 2px 4px;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+.input {
+  margin-left: 8px;
+  flex: 1;
+}
+.icon_button {
+  padding: 10px;
+}
+.divider {
+  width: 1px;
+  height: 28px;
+  margin: 4px;
+}
