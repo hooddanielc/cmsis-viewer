@@ -87,10 +87,6 @@ export const launchDebugger = ({filepath, remote}) => async (dispatch) => {
       });
     });
 
-    gdb.on('notify', (data) => {
-      console.log('GDB NOTIFY', data);
-    });
-
     gdb.on('exec', (data) => {
       dispatch({
         type: GDB_EXEC_STATUS_UPDATE,

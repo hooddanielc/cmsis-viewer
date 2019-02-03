@@ -97,7 +97,7 @@ class GDBToolbar extends React.Component {
 
   async onStop() {
     const {gdb} = this.props.gdb;
-    await gdb.exit();
+    await gdb.execMI('-gdb-exit');
   }
 
   async onAbort() {
