@@ -8,13 +8,16 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Typography from '@material-ui/core/Typography';
 
-
 import styles from '../../styles';
 import s from './PeripheralList.scss';
 import classnames from 'classnames';
 import Peripheral from '../Peripheral/Peripheral';
 
 class PeripheralList extends React.Component {
+  shouldComponentUpdate(props) {
+    return this.props.peripherals.length != props.peripherals.length;
+  }
+
   render() {
     const {classes} = this.props;
     return (

@@ -23,7 +23,7 @@ import Register from '../Register/Register';
 import {GDB} from 'gdb-js';
 import {load} from '../../actions/gdb';
 import GDBToolbar from '../../containers/GDBToolbarContainer';
-
+import TerminalTabs from '../TerminalTabs/TerminalTabs'
 function Info({data, classes}) {
   const rows = [];
   Object.keys(data.device).forEach((k) => {
@@ -106,6 +106,7 @@ class ViewCMSISPage extends React.Component {
     super(props);
     this.state = {
       selectedRegisters: [],
+      terminalHeight: 398
     }
   }
 
@@ -247,6 +248,10 @@ class ViewCMSISPage extends React.Component {
     }
   }
 
+  resizeTerminals(size) {
+    this.setState({terminalHeight: size})
+  }
+
   render() {
     const {classes} = this.props;
     const {company} = this.props.match.params;
@@ -260,28 +265,39 @@ class ViewCMSISPage extends React.Component {
     return (
       <Page>
         <SplitPane className={s.container} minSize={375} style={{position: 'relative'}} split="vertical">
-            <div className={s.leftpane}>
-              <Paper>
-                <PeripheralList onSelectItem={this.onSelectItem.bind(this)} peripherals={peripherals} />
-              </Paper>
-              <Paper>
-                <Info data={this.state.data} classes={classes} />
-              </Paper>
-              <Divider />
-              <Paper>
-                {this.state.data.device.cpu && <CpuInfo data={this.state.data.device.cpu[0]} classes={classes} />}
-              </Paper>
-            </div>
-            <div className={s.rightpane}>
-              <Paper>
-                <GDBToolbar />
-                {this.state.selectedRegisters.map((data, i) => {
-                  return (
-                    <Register key={`register-${i}`} data={data} />
-                  );
-                })}
-              </Paper>
-            </div>
+          <div className={s.leftpane}>
+            <Paper>
+              <PeripheralList onSelectItem={this.onSelectItem.bind(this)} peripherals={peripherals} />
+            </Paper>
+            <Paper>
+              <Info data={this.state.data} classes={classes} />
+            </Paper>
+            <Divider />
+            <Paper>
+              {this.state.data.device.cpu && <CpuInfo data={this.state.data.device.cpu[0]} classes={classes} />}
+            </Paper>
+          </div>
+          <div className={s.rightpane}>
+            <SplitPane onChange={this.resizeTerminals.bind(this)} className={s.container} defaultSize={this.state.terminalHeight} maxSize={398} minSize={100} primary="second" split="horizontal">
+              <div className={s.toppane}>
+                <Paper>
+                  <GDBToolbar />
+                  {this.state.selectedRegisters.map((data, i) => {
+                    return (
+                      <Register key={`register-${i}`} data={data} />
+                    );
+                  })}
+                </Paper>
+              </div>
+              <div className={s.bottompane + ' ' + s.height_100}>
+                <TerminalTabs
+                  height={this.state.terminalHeight || 'auto'}
+                  className={s.height_100}
+                  terminalOutput={this.props.gdb.terminalOutput}
+                />
+              </div>
+            </SplitPane>
+          </div>
         </SplitPane>
       </Page>
     );

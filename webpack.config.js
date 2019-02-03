@@ -123,6 +123,13 @@ const BROWSER_REACT_CONFIG = {
     // We no not want to minimize our code.
     minimize: false
   },
+  resolve: {
+    ...REACT_CONFIG.resolve,
+    alias: {
+      ...REACT_CONFIG.resolve.alias,
+      'child_process': path.join(web_shims, 'cmsis-viewer-child-process.js'),
+    }
+  }
 }
 
 const CLI_CONFIG = {

@@ -1,7 +1,6 @@
 import fs from 'fs';
 import path from 'path';
 import React from 'react';
-import styles from '../../styles';
 
 import {withStyles} from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
@@ -20,7 +19,9 @@ import DirectionsIcon from '@material-ui/icons/Directions';
 import Help from '@material-ui/icons/Help';
 import PlayCircleFilled from '@material-ui/icons/PlayCircleFilled';
 
+import styles from '../../styles';
 import s from './GDBToolbar.scss';
+import {load, analyze} from '../../actions/gdb'; 
 
 class GDBToolbar extends React.Component {
   constructor(props) {
@@ -39,7 +40,18 @@ class GDBToolbar extends React.Component {
     this.fileinput.click();
   }
 
+  async startIconClick() {
+    try {
+      const filepath = this.input.value;
+      await this.props.dispatch(load({filepath}));
+      await this.props.dispatch(analyze({filepath}));
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   render() {
+    console.log('this.props', this.props);
     return (
       <div className={s.gdb_toolbar}>
         <div className={s.fileinput_container}>
@@ -52,7 +64,7 @@ class GDBToolbar extends React.Component {
             <Pageview />
           </IconButton>
           <Divider className={s.divider} />
-          <IconButton color="primary" className={s.iconButton} aria-label="Directions">
+          <IconButton onClick={this.startIconClick.bind(this)} color="primary" className={s.iconButton} aria-label="Directions">
             <PlayCircleFilled />
           </IconButton>
         </div>
