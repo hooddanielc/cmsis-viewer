@@ -44,3 +44,7 @@ npm start
  * publish to npm
  * package electron for window, osx, and linux
  * improve gdb toolbar button state, user is required to refresh the page (ctrl+r) because the toolbar get's in a bad state.
+
+# Contributing
+
+If you have something you want to contribute, please create an issue and/or submit a pull request.
