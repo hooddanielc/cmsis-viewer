@@ -19,7 +19,7 @@ import PeripheralList from '../PeripheralList/PeripheralList';
 import SplitPane from 'react-split-pane';
 import Page from '../Page/Page';
 import s from './ViewCMSISPage.scss';
-import Register from '../Register/Register';
+import RegisterContainer from '../../containers/RegisterContainer';
 import {GDB} from 'gdb-js';
 import {load} from '../../actions/gdb';
 import GDBToolbar from '../../containers/GDBToolbarContainer';
@@ -280,11 +280,13 @@ class ViewCMSISPage extends React.Component {
           <div className={s.rightpane}>
             <SplitPane onChange={this.resizeTerminals.bind(this)} className={s.container} defaultSize={this.state.terminalHeight} maxSize={398} minSize={100} primary="second" split="horizontal">
               <div className={s.toppane}>
-                <Paper>
+                <Paper className={s.gdb_toolbar}>
                   <GDBToolbar />
+                </Paper>
+                <Paper className={s.rightpane_content}>
                   {this.state.selectedRegisters.map((data, i) => {
                     return (
-                      <Register key={`register-${i}`} data={data} />
+                      <RegisterContainer key={`register-${i}`} data={data} />
                     );
                   })}
                 </Paper>

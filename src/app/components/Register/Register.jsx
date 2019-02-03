@@ -10,12 +10,20 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
 
 import styles from '../../styles';
 import s from './Register.scss';
 
 
 class Register extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      bitValues: null,
+    }
+  }
 
   getSize() {
     const {size} = this.props.data;
@@ -79,12 +87,32 @@ class Register extends React.Component {
     );
   }
 
+  renderBitValues(fields) {
+    if (!this.state.bitValues) {
+      return null;
+    }
+
+    return (
+      <tr className={s.bit_values}>
+        {fields.map(({index, name, bitOffset}) => (
+          <td
+            className={classnames({[s[`reserved`]]: !name})}
+            key={`thead-${index}`}
+          >
+            {this.state.bitValues.charAt(31 - index)}
+          </td>
+        )).reverse()}
+      </tr>
+    );
+  }
+
   renderBitTableBody(fields) {
     const filtered = fields.filter(({index, bitOffset}, i) => {
       return index === bitOffset || i === 0;
     });
     return (
       <tbody>
+        {this.renderBitValues(fields)}
         <tr>
           {filtered.map((field, k) => {
             const index = field.index > 15 ? field.index - 16 : field.index;
@@ -186,14 +214,40 @@ class Register extends React.Component {
     );
   }
 
-  render() {
-    const {classes} = this.props;
+  async onRead() {
+    const {peripheral, name} = this.props.data;
+    const {gdb} = this.props.gdb;
+    const result = await gdb.evaluate(`${peripheral}->${name}`);
+    const num = parseInt(result, 10);
+    const binaryString = num.toString(2);
+    let fullString = binaryString;
+    for (let i = 0; i < 32 - binaryString.length; ++i) {
+      fullString = '0' + fullString;
+    }
+
+    this.setState({bitValues: fullString});
+  }
+
+  renderToolbar() {
     const {data} = this.props;
+    const {launchStatus} = this.props.gdb;
+    const disabled = launchStatus !== 'ok';
     return (
-      <div>
+      <div className={s.toolbar}>
         <Typography variant="title">
           {data.peripheral}_{data.name}
         </Typography>
+        <Button onClick={this.onRead.bind(this)} disabled={disabled} className={s.read_button} variant="contained" color="primary">
+          Read
+        </Button>
+      </div>
+    );
+  }
+
+  render() {
+    return (
+      <div>
+        {this.renderToolbar()}
         {this.renderTable()}
       </div>
     );

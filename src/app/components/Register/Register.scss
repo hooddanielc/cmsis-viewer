@@ -44,6 +44,7 @@
   border-top: 1px solid black;
 }
 
+
 .reserved {
   color: #eee;
 }
@@ -69,4 +70,21 @@
 
 .field_table th {
   border-spacing: 5px 0 0 0;
+}
+
+.bit_values {
+  text-align: center;
+  border-spacing: 5px 0 0 0;
+}
+
+
+.toolbar {
+  position: relative;
+  padding: 10px;
+  .read_button {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+  }
 }

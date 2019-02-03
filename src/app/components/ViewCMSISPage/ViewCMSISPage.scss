@@ -1,5 +1,17 @@
 $paneheight: calc(100vh - 63.99px);
 
+.gdb_toolbar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+}
+
+.rightpane_content {
+    height: 100%;
+    overflow-y: auto;
+}
+
 .height_100 {
     height: 100%;
 }
@@ -17,7 +29,10 @@ $paneheight: calc(100vh - 63.99px);
 
 .rightpane {
     height: $paneheight !important;
-    overflow-y: auto;
+}
+
+.toppane {
+    padding-top: 62px;
 }
 
 .toppane,
