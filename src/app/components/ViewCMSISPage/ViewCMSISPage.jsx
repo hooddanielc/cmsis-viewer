@@ -228,6 +228,13 @@ class ViewCMSISPage extends React.Component {
         Object.keys(derived).forEach((k) => {
           if (!result[k] && derived[k]) {
             result[k] = derived[k];
+
+            if (k === 'registers') {
+              result[k] = result[k].map((reg) => ({
+                ...reg,
+                peripheral: result.name,
+              }));
+            }
           }
         });
       }
